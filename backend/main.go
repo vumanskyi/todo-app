@@ -4,13 +4,16 @@ import (
 	"database/sql"
 	"github.com/labstack/echo"
 	_ "github.com/mattn/go-sqlite3"
-	"todo-app/backend/handlers"
+	"todo-app/backend/services"
 )
 
-const address = ":8000"
+const (
+	address = ":8000"
+	storage = "storage.db"
+)
 
 func main() {
-	db := initDB("storage.db")
+	db := initDB(storage)
 
 	e := echo.New()
 
@@ -20,23 +23,21 @@ func main() {
 
 }
 
-
-func route(e *echo.Echo, db *sql.DB )   {
+func route(e *echo.Echo, db *sql.DB) {
 	//e.File("/", "public/index.html")
-	e.GET("/tasks", handlers.GetTasks(db))
-	e.POST("/tasks", handlers.PostTask(db))
-	e.DELETE("/tasks/:id", handlers.DeleteTask(db))
+	e.GET("/tasks", services.GetTasks(db))
+	e.POST("/tasks", services.PostTask(db))
+	e.DELETE("/tasks/:id", services.DeleteTask(db))
 }
 
-
-func initDB(filePath string) *sql.DB  {
+func initDB(filePath string) *sql.DB {
 	db, err := sql.Open("sqlite3", filePath)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if  db == nil {
+	if db == nil {
 		panic("db interface - error")
 	}
 
@@ -45,7 +46,7 @@ func initDB(filePath string) *sql.DB  {
 	return db
 }
 
-func migrate(db *sql.DB)  {
+func migrate(db *sql.DB) {
 	sql := `
     CREATE TABLE IF NOT EXISTS tasks(
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

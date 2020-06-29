@@ -1,4 +1,4 @@
-package handlers
+package services
 
 import (
 	"database/sql"
@@ -23,7 +23,7 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Instantiate a new task
 		var task models.Task
-		// Map imcoming JSON body to the new Task
+		// Map incoming JSON body to the new Task
 		c.Bind(&task)
 		// Add a task using our new model
 		id, err := models.PostTask(db, task.Name)
@@ -40,7 +40,7 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 }
 
 // Delete Task endpoint
-func DeleteTask(db *sql.DB) echo.HandlerFunc  {
+func DeleteTask(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, _ := strconv.Atoi(c.Param("id"))
 		// Use our new model to delete a task
