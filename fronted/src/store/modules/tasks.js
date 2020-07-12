@@ -1,4 +1,5 @@
 import STATUS from '@/libs/status';
+import { getRequest, putRequest, postRequest} from '@/libs/request';
 
 const tasks = {
     state: {
