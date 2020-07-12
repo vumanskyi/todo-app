@@ -18,6 +18,13 @@ func GetTasks(db *sql.DB) echo.HandlerFunc {
 	}
 }
 
+func GetTask(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, _ := strconv.Atoi(c.Param("id"))
+		return c.JSON(http.StatusOK, models.GetTask(db, id))
+	}
+}
+
 // Put Task endpoint
 func PostTask(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -26,7 +33,7 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 		// Map incoming JSON body to the new Task
 		c.Bind(&task)
 		// Add a task using our new model
-		id, err := models.PostTask(db, task.Name)
+		id, err := models.PostTask(db, task.Title, task.Description, task.Tags, task.Date)
 		// Return a JSON response if successful
 		if err == nil {
 			return c.JSON(http.StatusCreated, H{

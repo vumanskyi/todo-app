@@ -10,6 +10,7 @@ import (
 const (
 	address = ":8000"
 	storage = "storage.db"
+	version = "/v1"
 )
 
 func main() {
@@ -24,10 +25,10 @@ func main() {
 }
 
 func route(e *echo.Echo, db *sql.DB) {
-	//e.File("/", "public/index.html")
-	e.GET("/tasks", services.GetTasks(db))
-	e.POST("/tasks", services.PostTask(db))
-	e.DELETE("/tasks/:id", services.DeleteTask(db))
+	e.GET(version+"/tasks", services.GetTasks(db))
+	e.GET(version+"/tasks/:id", services.GetTask(db))
+	e.POST(version+"/tasks", services.PostTask(db))
+	e.DELETE(version+"/tasks/:id", services.DeleteTask(db))
 }
 
 func initDB(filePath string) *sql.DB {
@@ -50,7 +51,10 @@ func migrate(db *sql.DB) {
 	sql := `
     CREATE TABLE IF NOT EXISTS tasks(
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-        name VARCHAR NOT NULL
+        title VARCHAR NOT NULL,
+		description TEXT NOT NULL,
+		tags VARCHAR DEFAULT NULL,
+		date DATE 
     );
     `
 
