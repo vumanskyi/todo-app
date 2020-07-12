@@ -1,5 +1,5 @@
-import TasksModule from 'tasksModule';
+import task from '@/store/modules/tasks';
 
 export default {
-    TasksModule
+    task
 };

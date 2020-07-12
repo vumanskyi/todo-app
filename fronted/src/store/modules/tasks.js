@@ -1,8 +1,9 @@
 import STATUS from '@/libs/status';
 
-const TasksModule = {
+const tasks = {
     state: {
         tasks: JSON.parse(localStorage.getItem('tasks') || '[]').map(t => {
+            console.log("LOG");
             if (new Date() > new Date(t.date)) {
                 t.status = STATUS.OUTDATED;
             }
@@ -16,7 +17,7 @@ const TasksModule = {
         /**
          * The same
          *
-         * (s) {
+         * function (s) {
          *     return function (id) {
          *         return s.tasks.find(t => t.id === id)
          *     }
@@ -68,4 +69,4 @@ const TasksModule = {
     },
 };
 
-export default TasksModule;
+export default tasks;
