@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	_ "github.com/mattn/go-sqlite3"
 	"todo-app/backend/services"
 )
@@ -25,6 +26,11 @@ func main() {
 }
 
 func route(e *echo.Echo, db *sql.DB) {
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8080", "http://127.0.0.1:8080"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	e.GET(version+"/tasks", services.GetTasks(db))
 	e.GET(version+"/tasks/:id", services.GetTask(db))
 	e.POST(version+"/tasks", services.PostTask(db))
@@ -54,6 +60,7 @@ func migrate(db *sql.DB) {
         title VARCHAR NOT NULL,
 		description TEXT NOT NULL,
 		tags VARCHAR DEFAULT NULL,
+		status VARCHAR DEFAULT NULL,
 		date DATE 
     );
     `

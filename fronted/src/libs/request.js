@@ -20,7 +20,8 @@ export const METHODS = {
  *
  */
 async function request(method = GET, url= '', data = {}) {
-    const response = await fetch(url, {
+
+    const object = {
         method: method,
         mode: 'cors',
         cache: 'no-cache',
@@ -29,8 +30,16 @@ async function request(method = GET, url= '', data = {}) {
             'Content-Type': 'application/json'
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(data)
-    });
+    };
+
+
+    if (method === POST || method === PUT) {
+        console.log(data);
+        console.log(JSON.stringify(data));
+        object.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(url, object);
 
     return await response.json();
 }
@@ -39,14 +48,14 @@ async function request(method = GET, url= '', data = {}) {
  * @param {String} url
  * @param {Object} data
  */
-async function postRequest(url, data) {
+export async function postRequest(url, data) {
     return request(POST, url, data);
 }
 
 /**
  * @param {String} url
  */
-async function deleteRequest(url) {
+export async function deleteRequest(url) {
     return request(DELETE, url, data);
 }
 
@@ -54,7 +63,7 @@ async function deleteRequest(url) {
  * @param {String} url
  * @param {Object} data
  */
-async function getRequest(url, data) {
+export async function getRequest(url, data) {
     return request(GET, url, data);
 }
 
@@ -62,7 +71,7 @@ async function getRequest(url, data) {
  * @param {String} url
  * @param {Object} data
  */
-async function putRequest(url, data) {
+export async function putRequest(url, data) {
     return request(PUT, url, data);
 }
 
@@ -71,10 +80,3 @@ async function putRequest(url, data) {
 //     .then((data) => {
 //         console.log(data); // JSON data parsed by `response.json()` call
 //     });
-
-export default {
-    postRequest,
-    deleteRequest,
-    getRequest,
-    putRequest
-}

@@ -12,11 +12,12 @@ type Task struct {
 	Description string `json:"description"`
 	Tags        string `json:"tags"`
 	Date        string `json:"date"`
+	Status      string `json:"status"`
 }
 
 // TaskCollection is collection of Tasks
 type TaskCollection struct {
-	Tasks []Task `json:"items"`
+	Tasks []Task `json:"data"`
 }
 
 func GetTasks(db *sql.DB) TaskCollection {
@@ -32,7 +33,7 @@ func GetTasks(db *sql.DB) TaskCollection {
 	result := TaskCollection{}
 	for rows.Next() {
 		task := Task{}
-		err2 := rows.Scan(&task.ID, &task.Title, &task.Description, &task.Tags, &task.Date)
+		err2 := rows.Scan(&task.ID, &task.Title, &task.Description, &task.Tags, &task.Status, &task.Date)
 		// Exit if we get an error
 		if err2 != nil {
 			panic(err2)
@@ -49,7 +50,7 @@ func GetTask(db *sql.DB, id int) Task {
 
 	task := Task{}
 
-	err := row.Scan(&task.ID, &task.Title, &task.Description, &task.Tags, &task.Date)
+	err := row.Scan(&task.ID, &task.Title, &task.Description, &task.Tags, &task.Status, &task.Date)
 
 	if err != nil {
 		panic(err)
@@ -59,8 +60,8 @@ func GetTask(db *sql.DB, id int) Task {
 
 }
 
-func PostTask(db *sql.DB, title, description, tags, date string) (int64, error) {
-	sql := "INSERT INTO tasks(title, description, tags, date) VALUES(?, ?, ?, ?)"
+func PostTask(db *sql.DB, title, description, tags, status, date string) (int64, error) {
+	sql := "INSERT INTO tasks(title, description, tags, status, date) VALUES(?, ?, ?, ?, ?)"
 
 	// Create a prepared SQL statement
 	stmt, err := db.Prepare(sql)
@@ -72,7 +73,7 @@ func PostTask(db *sql.DB, title, description, tags, date string) (int64, error) 
 	defer stmt.Close()
 
 	// Replace the '?' in our prepared statement with 'title', etc.
-	result, err2 := stmt.Exec(title, description, tags, date)
+	result, err2 := stmt.Exec(title, description, tags, status, date)
 	// Exit if we get an error
 	if err2 != nil {
 		panic(err2)

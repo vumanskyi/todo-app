@@ -36,18 +36,24 @@
     export default {
         name: "Task",
         computed: {
-            task() {
+            // task() {
                 // symbol "+" help to convert string to number
-                return this.$store.getters.taskById(+this.$route.params.id)
-            }
+                // return this.$store.getters.taskById(+this.$route.params.id)
+            // }
         },
         data: () => ({
             description: '',
             chips: null,
             date: null,
+            task: '',
         }),
         mounted() {
-            this.description = this.task.description;
+            this.$store.dispatch('task', this.$route.params.id);
+
+            this.task = this.$store.getters.task;
+            this.description = this.task.description || '';
+
+            console.log(this.task);
 
             setTimeout(() => {
                 M.updateTextFields();

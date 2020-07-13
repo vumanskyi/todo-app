@@ -80,6 +80,8 @@
             filter: null
         }),
         mounted() {
+            this.$store.dispatch('listOfTask');
+
             M.FormSelect.init(this.$refs.select, {});
         }
     }

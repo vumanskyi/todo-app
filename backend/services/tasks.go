@@ -3,6 +3,7 @@ package services
 import (
 	"database/sql"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 	"strconv"
 	"todo-app/backend/models"
@@ -31,9 +32,13 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 		// Instantiate a new task
 		var task models.Task
 		// Map incoming JSON body to the new Task
+
 		c.Bind(&task)
+		log.Println(task)
+
+		log.Println("========")
 		// Add a task using our new model
-		id, err := models.PostTask(db, task.Title, task.Description, task.Tags, task.Date)
+		id, err := models.PostTask(db, task.Title, task.Description, task.Tags, task.Status, task.Date)
 		// Return a JSON response if successful
 		if err == nil {
 			return c.JSON(http.StatusCreated, H{

@@ -3,14 +3,21 @@ import { getRequest, putRequest, postRequest} from '@/libs/request';
 
 const tasks = {
     state: {
+        //use data from REST API instead of localStorage
         tasks: JSON.parse(localStorage.getItem('tasks') || '[]').map(t => {
-            console.log("LOG");
             if (new Date() > new Date(t.date)) {
                 t.status = STATUS.OUTDATED;
             }
 
+            if (t.tags) {
+                t.tags = JSON.parse(t.tags || '[]');
+            }
+
             return t;
-        })
+        }),
+
+        task: localStorage.getItem('task') || ''
+
     },
     getters: {
         tasks: s => s.tasks,
@@ -24,10 +31,21 @@ const tasks = {
          *     }
          * }
          */
-        taskById: s => id => s.tasks.find(t => t.id === id)
+        taskById: s => id => s.tasks.find(t => t.id === id),
+
+        task: s => s.task,
     },
     mutations: {
         setTask(state, task) {
+            state.task = task;
+            localStorage.setItem('task', state.task)
+        },
+
+        setTasks(state, tasks) {
+            state.tasks = tasks || [];
+            localStorage.setItem('tasks', JSON.stringify(state.tasks || '[]'));
+        },
+        addTasks(state, task) {
             state.tasks.push(task);
 
             localStorage.setItem('tasks', JSON.stringify(state.tasks));
@@ -57,15 +75,69 @@ const tasks = {
         }
     },
     actions: {
+        /**
+         * @param {Object} commit
+         * @param {Object} task
+         */
         createTask({commit}, task) {
-            commit('setTask', task);
+            task.tags = JSON.stringify(task.tags);
+            commit('addTasks', task);
+
+            // console.log(JSON.stringify(task));
+            postRequest('http://localhost:8000/v1/tasks', {
+                title: task.title,
+                description: task.description,
+                tags: task.tags,
+                date: task.date,
+            });
         },
 
+        /**
+         * @param {Object} commit
+         * @param {Object} task
+         */
         updateTask({commit}, task) {
             commit('updateTask', task);
         },
+
+        /**
+         * @param {Object} commit
+         * @param {Number} id
+         */
         completeTask({commit}, id) {
             commit('completeTask', id);
+        },
+
+        /**
+         * @param {Object} commit
+         */
+        listOfTask({commit}) {
+            localStorage.removeItem('tasks');
+            return getRequest('http://localhost:8000/v1/tasks')
+                .then(response => {
+                    const { data } = response;
+                    commit('setTasks', data);
+                })
+                .catch(error => {
+                    console.error(error);
+                    commit('setTasks', localStorage.getItem('tasks'))
+                })
+        },
+
+        /**
+         * @param {Object} commit
+         * @param {Number} id
+         */
+        task({commit}, id) {
+            getRequest(`http://localhost:8000/v1/tasks/${id}`)
+                .then(response => {
+                    localStorage.removeItem('task');
+                    commit('setTask', response);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
         }
     },
 };
