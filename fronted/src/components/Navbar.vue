@@ -35,6 +35,9 @@
 
 <style lang="scss" scoped>
 nav {
- padding: 0 1rem;
+    padding: 0 1rem;
+    a {
+        color: #fff !important;
+    }
 }
 </style>

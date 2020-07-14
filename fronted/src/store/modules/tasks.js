@@ -16,7 +16,7 @@ const tasks = {
             return t;
         }),
 
-        task: localStorage.getItem('task') || ''
+        task: JSON.parse(localStorage.getItem('task') || '{}')
 
     },
     getters: {
@@ -38,7 +38,7 @@ const tasks = {
     mutations: {
         setTask(state, task) {
             state.task = task;
-            localStorage.setItem('task', state.task)
+            localStorage.setItem('task', JSON.stringify(state.task));
         },
 
         setTasks(state, tasks) {
@@ -137,7 +137,6 @@ const tasks = {
                 .catch(error => {
                     console.error(error);
                 });
-
         }
     },
 };

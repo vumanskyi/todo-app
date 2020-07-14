@@ -1,27 +1,26 @@
 <template>
     <div class="row">
-        <div v-if="task" class="col s6 offset-s3">
+        <div v-if="load" class="col s6 offset-s3">
             <h1>Task - {{task.title}}</h1>
+                <form @submit.prevent="submitHandler">
 
-            <form @submit.prevent="submitHandler">
-                <div class="chips" ref="chips"></div>
+                    <div class="input-field">
+                        <textarea style="min-height: 100px" v-model="description" id="description" class="materialize-textarea"></textarea>
+                        <label for="description">Description</label>
+                        <span class="character-counter" style="float: right; font-size: 12px;">{{ description.length }}/2048</span>
+                    </div>
 
-                <div class="input-field">
-                    <textarea style="min-height: 100px" v-model="description" id="description" class="materialize-textarea"></textarea>
-                    <label for="description">Description</label>
-                    <span class="character-counter" style="float: right; font-size: 12px;">{{ description.length }}/2048</span>
-                </div>
+                    <md-chips v-model="tags" md-placeholder="Add tags..."></md-chips>
 
-                <div class="input-field">
-                    <input type="text" class="datepicker" ref="datepicker">
-                </div>
 
-                <div v-if="task.status !== 'completed' ">
-                    <button type="button" @click="completeTask" class="waves-effect waves-light btn-large blue " style="margin-right: 1rem">Complete</button>
+                    <md-datepicker v-model="date" />
 
-                    <button type="submit" class="waves-effect waves-light btn-large blue darken-4">Update</button>
-                </div>
-            </form>
+                    <div v-if="task.status !== 'completed' ">
+                        <button type="button" @click="completeTask" class="waves-effect waves-light btn-large blue " style="margin-right: 1rem">Complete</button>
+
+                        <button type="submit" class="waves-effect waves-light btn-large blue darken-4">Update</button>
+                    </div>
+                </form>
         </div>
 
         <div v-else>
@@ -39,13 +38,15 @@
             // task() {
                 // symbol "+" help to convert string to number
                 // return this.$store.getters.taskById(+this.$route.params.id)
+                // return this.$store.getters.task()
             // }
         },
         data: () => ({
             description: '',
-            chips: null,
             date: null,
-            task: '',
+            task: null,
+            load: false,
+            tags: []
         }),
         mounted() {
             this.$store.dispatch('task', this.$route.params.id);
@@ -53,22 +54,19 @@
             this.task = this.$store.getters.task;
             this.description = this.task.description || '';
 
-            console.log(this.task);
-
             setTimeout(() => {
                 M.updateTextFields();
             }, 0);
 
-            this.chips = M.Chips.init(this.$refs.chips, {
-                placeholder: 'Task tags',
-                data: this.task.tags
-            });
+            this.tags = JSON.parse(this.task.tags);
+            this.date = new Date(this.task.date);
 
-            this.date = M.Datepicker.init(this.$refs.datepicker, {
-                format: 'dd.mm.yyyy',
-                defaultDate: new Date(this.task.date),
-                setDefaultDate: true
-            });
+
+            this.load = true;
+
+
+
+
         },
         methods: {
             submitHandler() {

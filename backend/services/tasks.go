@@ -34,9 +34,15 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 		// Map incoming JSON body to the new Task
 
 		c.Bind(&task)
-		log.Println(task)
+
+		if task.Status == "" {
+			task.Status = "active"
+		}
 
 		log.Println("========")
+		log.Println(task)
+		log.Println("========")
+
 		// Add a task using our new model
 		id, err := models.PostTask(db, task.Title, task.Description, task.Tags, task.Status, task.Date)
 		// Return a JSON response if successful

@@ -18,4 +18,7 @@ export default {
 </script>
 <style lang="scss">
 @import "~materialize-css/dist/css/materialize.min.css";
+.md-field:after, .md-field:before {
+  position: relative !important;
+}
 </style>
