@@ -82,6 +82,26 @@ func PostTask(db *sql.DB, title, description, tags, status, date string) (int64,
 	return result.LastInsertId()
 }
 
+func PutTask(db *sql.DB, tags, description, status, date string) (int64, error) {
+	sql := "UPDATE tasks SET tags = ?, description = ? , status = ?, date = ?"
+
+	stmt, err := db.Prepare(sql)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer stmt.Close()
+
+	result, err2 := stmt.Exec(description, tags, status, date)
+	// Exit if we get an error
+	if err2 != nil {
+		panic(err2)
+	}
+
+	return result.RowsAffected()
+}
+
 func DeleteTask(db *sql.DB, id int) (int64, error) {
 	sql := "DELETE FROM tasks WHERE id = ?"
 

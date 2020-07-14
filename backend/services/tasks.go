@@ -39,9 +39,9 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 			task.Status = "active"
 		}
 
-		log.Println("========")
+		log.Println("====INSERT====")
 		log.Println(task)
-		log.Println("========")
+		log.Println("====INSERT====")
 
 		// Add a task using our new model
 		id, err := models.PostTask(db, task.Title, task.Description, task.Tags, task.Status, task.Date)
@@ -50,6 +50,35 @@ func PostTask(db *sql.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusCreated, H{
 				"created": id,
 			})
+			// Handle any errors
+		} else {
+			return err
+		}
+	}
+}
+
+func PutTask(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// Instantiate a new task
+		var task models.Task
+		// Map incoming JSON body to the new Task
+
+		c.Bind(&task)
+
+		if task.Status == "" {
+			task.Status = "active"
+		}
+
+		log.Println("====UPDATE====")
+		log.Println(task)
+		log.Println("====UPDATE====")
+
+		// Add a task using our new model
+		id, err := models.PutTask(db, task.Tags, task.Description, task.Status, task.Date)
+		// Return a JSON response if successful
+		log.Println(id)
+		if err == nil {
+			return c.JSON(http.StatusNoContent, H{})
 			// Handle any errors
 		} else {
 			return err

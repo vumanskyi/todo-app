@@ -33,6 +33,7 @@ func route(e *echo.Echo, db *sql.DB) {
 
 	e.GET(version+"/tasks", services.GetTasks(db))
 	e.GET(version+"/tasks/:id", services.GetTask(db))
+	e.PUT(version+"/tasks/:id", services.PutTask(db))
 	e.POST(version+"/tasks", services.PostTask(db))
 	e.DELETE(version+"/tasks/:id", services.DeleteTask(db))
 }
