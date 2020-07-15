@@ -1,3 +1,18 @@
 Simple "TODO APP"
 ==================
-It's a simple TODO APP, written by golang on back-end part and vue js on front-end part
+This is a simple TODO APP, written by golang on back-end part and vue js on front-end part.
+
+![](https://cdn.labstack.com/images/echo-logo.svg =250x)
+###Backend was written by golang framework Echo
+
+```
+cd backend
+go run main.go
+```
+
+###Frontend was written with VUE framework
+
+```
+cd frontend
+npm run serve
+```
