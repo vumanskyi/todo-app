@@ -10,6 +10,7 @@ cd backend
 go run main.go
 ```
 
+![Vue](https://vuejs.org/images/logo.png)
 ### Frontend was written with VUE framework
 
 ```
