@@ -3,23 +3,43 @@ import { getRequest, putRequest, postRequest} from '@/libs/request';
 
 const tasks = {
     state: {
-        //use data from REST API instead of localStorage
-        tasks: JSON.parse(localStorage.getItem('tasks') || '[]').map(t => {
-            if (new Date() > new Date(t.date)) {
-                t.status = STATUS.OUTDATED;
-            }
+        tasks: [],
+        // //use data from REST API instead of localStorage
+        // tasks: JSON.parse(localStorage.getItem('tasks') || '[]').map(t => {
+        //     if (new Date() > new Date(t.date)) {
+        //         t.status = STATUS.OUTDATED;
+        //     }
+        //
+        //     if (t.tags) {
+        //         t.tags = JSON.parse(t.tags || '[]');
+        //     }
+        //
+        //     return t;
+        // }),
 
-            if (t.tags) {
-                t.tags = JSON.parse(t.tags || '[]');
-            }
+        // task: JSON.parse(localStorage.getItem('task') || '{}')
 
-            return t;
-        }),
-
-        task: JSON.parse(localStorage.getItem('task') || '{}')
+        task: {}
 
     },
     getters: {
+        TASKS: s => {
+            const tasks = s.tasks.map(t => {
+                if (new Date() > new Date(t.date)) {
+                    t.status = STATUS.OUTDATED;
+                }
+
+                if (t.tags) {
+                    t.tags = JSON.parse(t.tags);
+                }
+                return t;
+            });
+            console.log(tasks);
+            return tasks;
+        },
+
+        TASK: s => s.task,
+
         tasks: s => s.tasks,
 
         /**
@@ -36,35 +56,50 @@ const tasks = {
         task: s => s.task,
     },
     mutations: {
-        setTask(state, task) {
-            state.task = task;
-            localStorage.setItem('task', JSON.stringify(state.task));
+
+        SET_TASKS: (s, tasks) => {
+            s.tasks = tasks
         },
 
-        setTasks(state, tasks) {
-            state.tasks = tasks || [];
-            localStorage.setItem('tasks', JSON.stringify(state.tasks || '[]'));
+        SET_TASK: (s, task) => {
+            s.task = task;
         },
-        addTasks(state, task) {
-            state.tasks.push(task);
-
-            localStorage.setItem('tasks', JSON.stringify(state.tasks));
-        },
-        updateTask(state, {id, description, tags, date}) {
-            const tasks = state.tasks.concat();
-
-            const idx = tasks.findIndex(t => t.id === id);
-
-            const task = tasks[idx];
-
-            const status = new Date(date) > new Date() ? STATUS.ACTIVE : STATUS.OUTDATED;
-
-            tasks[idx] = {...task, date, tags, description, status}
-
-            state.tasks = tasks;
-
-            localStorage.setItem('tasks', JSON.stringify(state.tasks));
-        },
+        //
+        // // ADD_TASKS
+        //
+        // setTask(state, task) {
+        //     state.task = task;
+        //     localStorage.setItem('task', JSON.stringify(state.task));
+        // },
+        //
+        // addTasks(state, task) {
+        //     state.tasks.push(task);
+        //
+        //     localStorage.setItem('tasks', JSON.stringify(state.tasks));
+        // },
+        // updateTask(state, {id, description, tags, date}) {
+        //     const tasks = state.tasks.concat();
+        //
+        //     const idx = tasks.findIndex(t => t.id === id);
+        //
+        //     const task = tasks[idx];
+        //
+        //     const status = new Date(date) > new Date() ? STATUS.ACTIVE : STATUS.OUTDATED;
+        //
+        //     tasks[idx] = {...task, date, tags, description, status}
+        //
+        //     state.tasks = tasks;
+        //
+        //     localStorage.setItem('tasks', JSON.stringify(state.tasks));
+        //
+        //     putRequest(`http://localhost:8000/v1/tasks/${id}`, {
+        //         tags,
+        //         description,
+        //         status,
+        //         date
+        //     })
+        //
+        // },
 
         completeTask(state, id) {
             const idx = state.tasks.findIndex(t => t.id === id);
@@ -76,68 +111,75 @@ const tasks = {
     },
     actions: {
         /**
-         * @param {Object} commit
+         * @param {Object} context
+         */
+        GET_TASKS: async ({commit}) => {
+            let {data} = await getRequest('http://localhost:8000/v1/tasks');
+            commit('SET_TASKS', data);
+        },
+
+        /**
+         * @param {Object} context
+         * @param {Number} id
+         */
+        GET_TASK: async ({commit}, id) => {
+           let response = await getRequest(`http://localhost:8000/v1/tasks/${id}`);
+           commit('SET_TASK', response);
+        },
+
+        /**
+         * @param {Object} context
          * @param {Object} task
          */
-        createTask({commit}, task) {
-            task.tags = JSON.stringify(task.tags);
-            commit('addTasks', task);
-
+        CREATE_TASK: async (context, task) => {
             // console.log(JSON.stringify(task));
-            postRequest('http://localhost:8000/v1/tasks', {
+            await postRequest('http://localhost:8000/v1/tasks', {
                 title: task.title,
                 description: task.description,
                 tags: task.tags,
                 date: task.date,
+                status: STATUS.ACTIVE
             });
         },
 
         /**
-         * @param {Object} commit
+         * @param {Object} context
          * @param {Object} task
          */
-        updateTask({commit}, task) {
-            commit('updateTask', task);
+        UPDATE_TASK: async (context, task) => {
+
+          const id = task.id;
+          const tags = JSON.stringify(task.tags);
+          const description = task.description;
+          const date = task.date;
+          const status = task.status;
+
+          await putRequest(`http://localhost:8000/v1/tasks/${id}`, {
+              tags,
+              description,
+              status,
+              date
+          });
         },
 
         /**
-         * @param {Object} commit
-         * @param {Number} id
+         * @param {Object} context
+         * @param {Object} task
          */
-        completeTask({commit}, id) {
-            commit('completeTask', id);
-        },
+        COMPLETE_TASK: async (context, task) => {
+            const id = task.id;
+            const tags = JSON.stringify(task.tags);
+            const description = task.description;
+            const date = task.date;
+            const status = STATUS.COMPLETED;
 
-        /**
-         * @param {Object} commit
-         */
-        listOfTask({commit}) {
-            localStorage.removeItem('tasks');
-            return getRequest('http://localhost:8000/v1/tasks')
-                .then(response => {
-                    const { data } = response;
-                    commit('setTasks', data);
-                })
-                .catch(error => {
-                    console.error(error);
-                    commit('setTasks', localStorage.getItem('tasks'))
-                })
+            await putRequest(`http://localhost:8000/v1/tasks/${id}`, {
+                tags,
+                description,
+                status,
+                date
+            });
         },
-
-        /**
-         * @param {Object} commit
-         * @param {Number} id
-         */
-        task({commit}, id) {
-            getRequest(`http://localhost:8000/v1/tasks/${id}`)
-                .then(response => {
-                    localStorage.removeItem('task');
-                    commit('setTask', response);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
     },
 };
 

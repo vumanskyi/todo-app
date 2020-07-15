@@ -27,7 +27,7 @@ func main() {
 
 func route(e *echo.Echo, db *sql.DB) {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:8080", "http://127.0.0.1:8080"},
+		AllowOrigins: []string{"http://localhost:8080", "http://127.0.0.1:8080", "*"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 

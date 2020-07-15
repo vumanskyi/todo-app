@@ -19,7 +19,7 @@ export const METHODS = {
  * @param {Object} data
  *
  */
-async function request(method = GET, url= '', data = {}) {
+async function request(method = GET, url, data) {
 
     const object = {
         method: method,
@@ -28,12 +28,12 @@ async function request(method = GET, url= '', data = {}) {
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
         },
     };
 
-
     if (method === POST || method === PUT) {
+        console.log("METHOD: " + method);
+        console.log(data);
         console.log(data);
         console.log(JSON.stringify(data));
         object.body = JSON.stringify(data);

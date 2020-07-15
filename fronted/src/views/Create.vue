@@ -58,7 +58,7 @@ export default {
           };
 
           if (this.description != '' && this.title != '' && this.date != null) {
-              this.$store.dispatch('createTask', task);
+              this.$store.dispatch('CREATE_TASK', task);
               this.$router.push('/list');
           }
       }

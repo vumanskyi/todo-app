@@ -48,38 +48,49 @@
             load: false,
             tags: []
         }),
+
         mounted() {
-            this.$store.dispatch('task', this.$route.params.id);
+            this.$store.dispatch('GET_TASK', this.$route.params.id).then(resp => {
+                const task = this.$store.getters.TASK;
 
-            this.task = this.$store.getters.task;
-            this.description = this.task.description || '';
+                this.description = task.description;
 
-            setTimeout(() => {
-                M.updateTextFields();
-            }, 0);
+                this.tags = JSON.parse(task.tags);
+                this.date = new Date(task.date);
 
-            this.tags = JSON.parse(this.task.tags);
-            this.date = new Date(this.task.date);
+                setTimeout(() => {
+                    M.updateTextFields();
+                }, 0);
 
-
-            this.load = true;
-
-
-
-
+                this.task = task;
+                if (task.status) {
+                    this.load = true;
+                }
+            });
         },
         methods: {
             submitHandler() {
-                this.$store.dispatch('updateTask', {
-                    id: this.task.id,
+                const task = {
+                    id: this.$route.params.id,
                     description: this.description,
-                    tags: this.chips.chipsData,
-                    date: this.date.date
-                });
+                    status: this.task.status,
+                    date: this.date,
+                    tags: this.tags
+                };
+
+                this.$store.dispatch('UPDATE_TASK', task);
+
                 this.$router.push('/list');
             },
             completeTask() {
-                this.$store.dispatch('completeTask', this.task.id);
+                const task = {
+                    id: this.$route.params.id,
+                    description: this.description,
+                    status: this.task.status,
+                    date: this.date,
+                    tags: this.tags
+                };
+                this.$store.dispatch('COMPLETE_TASK', task);
                 this.$router.push('/list');
             }
         },

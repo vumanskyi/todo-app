@@ -74,9 +74,8 @@ func PutTask(db *sql.DB) echo.HandlerFunc {
 		log.Println("====UPDATE====")
 
 		// Add a task using our new model
-		id, err := models.PutTask(db, task.Tags, task.Description, task.Status, task.Date)
+		_, err := models.PutTask(db, task.Tags, task.Description, task.Status, task.Date)
 		// Return a JSON response if successful
-		log.Println(id)
 		if err == nil {
 			return c.JSON(http.StatusNoContent, H{})
 			// Handle any errors

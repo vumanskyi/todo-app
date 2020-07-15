@@ -93,7 +93,7 @@ func PutTask(db *sql.DB, tags, description, status, date string) (int64, error) 
 
 	defer stmt.Close()
 
-	result, err2 := stmt.Exec(description, tags, status, date)
+	result, err2 := stmt.Exec(tags, description, status, date)
 	// Exit if we get an error
 	if err2 != nil {
 		panic(err2)

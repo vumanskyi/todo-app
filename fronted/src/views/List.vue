@@ -35,7 +35,7 @@
                 </thead>
                 <tbody>
                     <tr
-                        v-for="(task, idx) of displayTask"
+                        v-for="(task, idx) of filteredTasks"
                         :key="task.id"
                     >
                         <td>{{idx + 1}}</td>
@@ -64,10 +64,10 @@
         name: "List",
         computed: {
             tasks() {
-                return this.$store.getters.tasks
+                return this.$store.getters.TASKS
             },
             //filter
-            displayTask() {
+            filteredTasks() {
                 return this.tasks.filter(t => {
                    if (!this.filter) {
                        return true;
@@ -80,8 +80,7 @@
             filter: null
         }),
         mounted() {
-            this.$store.dispatch('listOfTask');
-
+            this.$store.dispatch('GET_TASKS');
             M.FormSelect.init(this.$refs.select, {});
         }
     }
