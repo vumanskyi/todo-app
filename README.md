@@ -2,7 +2,7 @@ Simple "TODO APP"
 ==================
 This is a simple TODO APP, written by golang on back-end part and vue js on front-end part.
 
-![Echo](https://cdn.labstack.com/images/echo-logo.svg =250x250)
+![Echo](https://cdn.labstack.com/images/echo-logo.svg)
 ### Backend was written by golang framework Echo
 
 ```
